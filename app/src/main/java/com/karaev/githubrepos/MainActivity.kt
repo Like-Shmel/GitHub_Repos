@@ -29,5 +29,10 @@ class MainActivity : AppCompatActivity() {
         super.onStart()
         Log.d("MainActivity","Был вызван onStart")
     }
+
+    override fun onStop(){
+        super.onStop()
+        Log.d("MainActivity","Был вызван onStop")
+    }
 }
 
