@@ -23,7 +23,10 @@ class MainActivity : AppCompatActivity() {
         transaction.commit()
     }
 
-
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d("MainActivity","Был вызван onDestroy")
+    }
 
     override fun onStart(){
         super.onStart()
