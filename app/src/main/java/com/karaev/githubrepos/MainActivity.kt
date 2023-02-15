@@ -29,7 +29,7 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
         Log.d("MainActivity", "Был вызван onDestroy")
     }
-
+// Вызывается при запуске приложения
     override fun onStart() {
         super.onStart()
         Log.d("MainActivity", "Был вызван onStart")
