@@ -23,7 +23,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-
+// Экран для отображения списка репозитория
 class RepositoriesListFragment : Fragment(R.layout.fragment_repositories_list) {
 
     val openFeaturedAuthorsFragment = FeaturedAuthorsFragment()
@@ -56,8 +56,6 @@ class RepositoriesListFragment : Fragment(R.layout.fragment_repositories_list) {
         loadRepositoriesList()
 
 
-
-
         val spinner: Spinner = view.findViewById(R.id.spinner_repos_list)
         spinner.setOnItemSelectedListener(object : OnItemSelectedListener {
             override fun onItemSelected(
@@ -82,13 +80,13 @@ class RepositoriesListFragment : Fragment(R.layout.fragment_repositories_list) {
 
 
         val featuredAuthors: Toolbar = view.findViewById(R.id.toolBar_favorites)
-        featuredAuthors.setOnMenuItemClickListener(object : Toolbar.OnMenuItemClickListener{
+        featuredAuthors.setOnMenuItemClickListener(object : Toolbar.OnMenuItemClickListener {
             override fun onMenuItemClick(item: MenuItem): Boolean {
-                if(item.itemId == R.id.menu_favorites){
+                if (item.itemId == R.id.menu_favorites) {
                     openFeaturedFragment(openFeaturedAuthorsFragment)
-                }else if (item.itemId == R.id.menu_about_app) {
+                } else if (item.itemId == R.id.menu_about_app) {
                     openAboutAppFragment()
-                }else if (item.itemId == R.id.setting_favorites){
+                } else if (item.itemId == R.id.setting_favorites) {
                     openSettingsFragment(settingsFragment)
                 }
                 return true
@@ -99,7 +97,7 @@ class RepositoriesListFragment : Fragment(R.layout.fragment_repositories_list) {
 
     }
 
-    private fun openAboutAppFragment(){
+    private fun openAboutAppFragment() {
         val aboutApp = AboutTheAppFragment()
         val transaction: FragmentTransaction =
             requireActivity().supportFragmentManager.beginTransaction()
@@ -109,13 +107,13 @@ class RepositoriesListFragment : Fragment(R.layout.fragment_repositories_list) {
     }
 
 
-   private fun openFeaturedFragment(fragment: Fragment) {
-       val transaction: FragmentTransaction =
-           requireActivity().supportFragmentManager.beginTransaction()
-       transaction.replace(R.id.main_fragment_container_view,fragment)
-       transaction.addToBackStack(null)
-       transaction.commit()
-   }
+    private fun openFeaturedFragment(fragment: Fragment) {
+        val transaction: FragmentTransaction =
+            requireActivity().supportFragmentManager.beginTransaction()
+        transaction.replace(R.id.main_fragment_container_view, fragment)
+        transaction.addToBackStack(null)
+        transaction.commit()
+    }
 
     private fun navigateFragment(fragment: Fragment) {
         val transaction: FragmentTransaction =
@@ -151,15 +149,15 @@ class RepositoriesListFragment : Fragment(R.layout.fragment_repositories_list) {
 
                     // Обратиться к хранилищу со значениями
 
-                    val sharedPreferences: SharedPreferences = requireContext().getSharedPreferences(
-                        "git_hub_preferences",
-                        Context.MODE_PRIVATE
-                    )
+                    val sharedPreferences: SharedPreferences =
+                        requireContext().getSharedPreferences(
+                            "git_hub_preferences", Context.MODE_PRIVATE
+                        )
 
                     // Получить значение по ключу
 
                     val repositoriesEditor: Int =
-                        sharedPreferences.getString("repositoriesNumber" ,null)!!.toInt()
+                        sharedPreferences.getString("repositoriesNumber", null)!!.toInt()
 
                     //Установить список с новым значение
 
