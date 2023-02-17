@@ -156,8 +156,8 @@ class RepositoriesListFragment : Fragment(R.layout.fragment_repositories_list) {
 
                     // Получить значение по ключу
 
-                    val repositoriesEditor: Int =
-                        sharedPreferences.getString("repositoriesNumber", null)!!.toInt()
+                    val repositoriesEditor: String? =
+                        sharedPreferences.getString("repositoriesNumber", null)
 
                     //Установить список с новым значение
 
@@ -169,7 +169,7 @@ class RepositoriesListFragment : Fragment(R.layout.fragment_repositories_list) {
 //                        repositoriesNum = usersList.size
 //                    }
 
-                    var repositoriesList = usersList.take(repositoriesEditor)
+                    var repositoriesList = usersList.take(repositoriesEditor?.toInt() ?: 20)
                     repositoryAdapter.repositories = repositoriesList.toMutableList()
                     repositoryAdapter.notifyDataSetChanged()
                 }

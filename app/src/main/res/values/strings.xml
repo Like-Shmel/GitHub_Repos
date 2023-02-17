@@ -3,6 +3,14 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
+    <string name="repositories">Репозитории</string>
+    <string name="sort">Сортировать</string>
+    <string name="featured_authors">Избранные авторы</string>
+    <string name="settings">Настройки</string>
+    <string name="about_the_application">О приложении</string>
+
+
+
     <string-array name="sorting_repository_list">
         <item>По умолчанию</item>
         <item>По названию</item>

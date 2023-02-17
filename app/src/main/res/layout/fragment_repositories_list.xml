@@ -11,7 +11,7 @@
         android:id="@+id/toolBar_favorites"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:title="Репозитории"
+        app:title="@string/repositories"
         app:menu="@menu/main_navigation_view" />
 
     <LinearLayout
@@ -24,7 +24,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Сортировать"
+            android:text="@string/sort"
             android:textColor="#DE000000"
             android:textSize="14sp" />
 

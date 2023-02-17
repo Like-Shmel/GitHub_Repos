@@ -4,14 +4,14 @@
 
     <item
         android:id="@+id/menu_favorites"
-        android:title="Избранные авторы"/>
+        android:title="@string/featured_authors"/>
 
     <item
         android:id="@+id/setting_favorites"
-        android:title="Настройки"/>
+        android:title="@string/settings"/>
 
     <item
         android:id="@+id/menu_about_app"
-        android:title="О приложении"/>
+        android:title="@string/about_the_application"/>
 
 </menu>
