@@ -10,14 +10,14 @@
         android:id="@+id/favorites_back_toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:title="Избранные авторы"
+        app:title="@string/featured_authors_fragment"
         app:navigationIcon="@drawable/ic_baseline_arrow_back_24"/>
 
     <EditText
         android:id="@+id/favorites_editText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Поиск автора"/>
+        android:hint="@string/author_search"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/favorites_recyclerview"

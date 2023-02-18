@@ -116,7 +116,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="17dp"
-                android:text="Подписчики: "
+                android:text="@string/subscribers"
                 android:textColor="#000000"
                 android:textSize="16sp" />
 
@@ -144,7 +144,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="17dp"
-                android:text="Подпсики: "
+                android:text="@string/subscriptions"
                 android:textColor="#000000"
                 android:textSize="16sp" />
 
@@ -174,7 +174,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="17dp"
-                android:text="Репозитории"
+                android:text="@string/repositories_text"
                 android:textColor="#000000"
                 android:textSize="16sp" />
 

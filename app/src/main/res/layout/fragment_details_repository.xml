@@ -147,7 +147,7 @@
                 android:layout_marginStart="14dp"
                 android:textColor="#000000"
                 android:textSize="14sp"
-                android:text="Ошибки" />
+                android:text="@string/error" />
 
             <TextView
                 android:id="@+id/errors_textview"
