@@ -3,8 +3,8 @@ package com.karaev.githubrepos
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.karaev.githubrepos.databinding.ItemRepositoryBinding
 
 class RepositoryAdapter(val repositoryListener: RepositoryListener): RecyclerView.Adapter<RepositoryAdapter.RepositoryViewHolder>() {
 
@@ -26,9 +26,9 @@ class RepositoryAdapter(val repositoryListener: RepositoryListener): RecyclerVie
 
     override fun onBindViewHolder(holder: RepositoryViewHolder, position: Int) {
         val repository: Repository = repositories.get(position)
-        holder.nameTextView.setText(repository.name)
-        holder.loginTextView.setText(repository.owner.login)
-        holder.descriptionTextView.setText(repository.description)
+        holder.binding!!.nameTextview.setText(repository.name)
+        holder.binding!!.loginTextview.setText(repository.owner.login)
+        holder.binding!!.descriptionTextview.setText(repository.description)
 //        val repositoryDetails: RepositoryDetails = repositoryDetails.get(position)
 
 
@@ -45,10 +45,7 @@ class RepositoryAdapter(val repositoryListener: RepositoryListener): RecyclerVie
     }
 
     class RepositoryViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
-
-        val nameTextView: TextView = itemView.findViewById(R.id.name_textview)
-        val loginTextView: TextView = itemView.findViewById(R.id.login_textview)
-        val descriptionTextView: TextView = itemView.findViewById(R.id.description_textview)
+        val binding: ItemRepositoryBinding = ItemRepositoryBinding.bind(itemView)
     }
 
     interface RepositoryListener{

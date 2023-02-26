@@ -3,24 +3,18 @@ package com.karaev.githubrepos
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.karaev.githubrepos.databinding.ItemFeaturedBinding
 import models.Favorites
 
 class FeaturedAdapter(val authorsListener: AuthorsListener): RecyclerView.Adapter<FeaturedAdapter.FeaturedViewHolder> (){
 
-
     var favorites: List<Favorites> = emptyList()
 
     class FeaturedViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
-        val avatarFavorites: ImageView = itemView.findViewById(R.id.avatar_favorites_imageview)
-        val nameFavorites: TextView = itemView.findViewById(R.id.name_favorites_textview)
-        val loginFavorites: TextView = itemView.findViewById(R.id.login_favorites_textview)
-        val delete: ImageView = itemView.findViewById(R.id.delete_favorites)
+        var binding: ItemFeaturedBinding = ItemFeaturedBinding.bind(itemView)
     }
-
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FeaturedViewHolder {
        val layoutInflater: LayoutInflater = LayoutInflater.from(parent.context)
@@ -34,10 +28,11 @@ class FeaturedAdapter(val authorsListener: AuthorsListener): RecyclerView.Adapte
     }
 
     override fun onBindViewHolder(holder: FeaturedViewHolder, position: Int) {
+
        val chosen: Favorites = favorites.get(position)
-        holder.nameFavorites.setText(chosen.name)
-        holder.loginFavorites.setText(chosen.login)
-        holder.delete.setOnClickListener(object : View.OnClickListener{
+        holder.binding!!.nameFavoritesTextview.setText(chosen.name)
+        holder.binding!!.loginFavoritesTextview.setText(chosen.login)
+        holder.binding!!.deleteFavorites.setOnClickListener(object : View.OnClickListener{
             override fun onClick(v: View?) {
                 authorsListener.onDeleteClick(chosen)
             }
@@ -45,15 +40,12 @@ class FeaturedAdapter(val authorsListener: AuthorsListener): RecyclerView.Adapte
 
         Glide.with(holder.itemView)
             .load(chosen.avatar)
-            .into(holder.avatarFavorites)
+            .into(holder.binding!!.avatarFavoritesImageview)
     }
-
 
     override fun getItemCount(): Int {
         return favorites.size
     }
-
-
 
 interface AuthorsListener{
 

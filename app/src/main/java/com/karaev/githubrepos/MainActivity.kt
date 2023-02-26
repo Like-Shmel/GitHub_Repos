@@ -4,10 +4,12 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentTransaction
+import com.karaev.githubrepos.databinding.ActivityMainBinding
 import com.karaev.githubrepos.fragments.RepositoriesListFragment
 
 //Главный экран приложения
 class MainActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityMainBinding
     // Вызывется при создании Activity
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
