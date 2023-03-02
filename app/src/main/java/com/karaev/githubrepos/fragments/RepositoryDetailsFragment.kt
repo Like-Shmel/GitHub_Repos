@@ -6,13 +6,9 @@ import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentTransaction
 import com.bumptech.glide.Glide
 import com.google.android.material.snackbar.Snackbar
-import com.karaev.githubrepos.GitHubReposApplication
-import com.karaev.githubrepos.R
-import com.karaev.githubrepos.RepositoryDetails
+import com.karaev.githubrepos.*
 import com.karaev.githubrepos.databinding.FragmentDetailsRepositoryBinding
 import retrofit2.Call
 import retrofit2.Callback
@@ -29,8 +25,9 @@ class RepositoryDetailsFragment : Fragment(R.layout.fragment_details_repository)
 
         binding!!.toolBarDetails.setNavigationOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View?) {
-                val fragmentManager: FragmentManager = requireActivity().supportFragmentManager
-                fragmentManager.popBackStack()
+//                val fragmentManager: FragmentManager = requireActivity().supportFragmentManager
+//                fragmentManager.popBackStack()
+                GitHubReposApplication.navigator.goForward(RepositoriesListScreen())
             }
         })
 
@@ -54,16 +51,17 @@ class RepositoryDetailsFragment : Fragment(R.layout.fragment_details_repository)
         binding!!.openDetailsUser.setOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View?) {
 
-                val userDetailsFragment = UserDetailsFragment()
-                val bundle = Bundle()
-                bundle.putString("login", repositoryDetails!!.owner.login)
-                userDetailsFragment.arguments = bundle
-
-                val transaction: FragmentTransaction =
-                    requireActivity().supportFragmentManager.beginTransaction()
-                transaction.replace(R.id.main_fragment_container_view, userDetailsFragment)
-                transaction.addToBackStack(null)
-                transaction.commit()
+                GitHubReposApplication.navigator.goForward(UserDetailsFragmentScreen())
+//                val userDetailsFragment = UserDetailsFragment()
+//                val bundle = Bundle()
+//                bundle.putString("login", repositoryDetails!!.owner.login)
+//                userDetailsFragment.arguments = bundle
+//
+//                val transaction: FragmentTransaction =
+//                    requireActivity().supportFragmentManager.beginTransaction()
+//                transaction.replace(R.id.main_fragment_container_view, userDetailsFragment)
+//                transaction.addToBackStack(null)
+//                transaction.commit()
             }
         })
 

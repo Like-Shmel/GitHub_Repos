@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import com.karaev.githubrepos.FeaturedAdapter
 import com.karaev.githubrepos.GitHubReposApplication
 import com.karaev.githubrepos.R
+import com.karaev.githubrepos.RepositoriesListScreen
 import com.karaev.githubrepos.databinding.FragmentFeaturedAuthorsBinding
 import database.FavoritesDao
 import models.Favorites
@@ -38,7 +39,7 @@ class FeaturedAuthorsFragment: Fragment(R.layout.fragment_featured_authors) {
 
         binding!!.favoritesBackToolbar.setNavigationOnClickListener(object : View.OnClickListener{
             override fun onClick(v: View?) {
-               requireActivity().supportFragmentManager.popBackStack()
+                GitHubReposApplication.navigator.goForward(RepositoriesListScreen())
             }
 
         })

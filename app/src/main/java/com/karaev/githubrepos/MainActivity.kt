@@ -3,9 +3,8 @@ package com.karaev.githubrepos
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.FragmentTransaction
 import com.karaev.githubrepos.databinding.ActivityMainBinding
-import com.karaev.githubrepos.fragments.RepositoriesListFragment
+import me.aartikov.alligator.NavigationContext
 
 //Главный экран приложения
 class MainActivity : AppCompatActivity() {
@@ -21,10 +20,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun navigateRepositoriesFragment() {
         //Выполняем переход на фрагмент списка репозитория
-        val repositoriesFragment = RepositoriesListFragment()
-        val transaction: FragmentTransaction = supportFragmentManager.beginTransaction()
-        transaction.replace(R.id.main_fragment_container_view, repositoriesFragment)
-        transaction.commit()
+        GitHubReposApplication.navigator.replace(RepositoriesListScreen())
     }
 
     // Вызывается при уничтожении экрана
@@ -41,6 +37,23 @@ class MainActivity : AppCompatActivity() {
     override fun onStop() {
         super.onStop()
         Log.d("MainActivity", "Был вызван onStop")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val navigationContext: NavigationContext = NavigationContext.Builder(this, GitHubReposApplication.navigatorFactory)
+            .fragmentNavigation(supportFragmentManager, R.id.main_fragment_container_view)
+            .build()
+        GitHubReposApplication.navigatorContextBinder.bind(navigationContext)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        GitHubReposApplication.navigatorContextBinder.unbind(this)
+    }
+
+    override fun onBackPressed() {
+        GitHubReposApplication.navigator.goBack()
     }
 }
 

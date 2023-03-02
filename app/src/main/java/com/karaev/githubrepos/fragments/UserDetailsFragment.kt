@@ -6,11 +6,11 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import com.bumptech.glide.Glide
 import com.google.android.material.snackbar.Snackbar
 import com.karaev.githubrepos.GitHubReposApplication
 import com.karaev.githubrepos.R
+import com.karaev.githubrepos.RepositoryDetailsScreen
 import com.karaev.githubrepos.UserDetails
 import com.karaev.githubrepos.databinding.FragmentDetailsUserBinding
 import database.FavoritesDao
@@ -29,9 +29,10 @@ class UserDetailsFragment : Fragment(R.layout.fragment_details_user) {
 
         binding!!.toolBarUserLogin.setNavigationOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View?) {
-                val fragmentManager: FragmentManager =
-                    requireActivity().supportFragmentManager
-                fragmentManager.popBackStack()
+//                val fragmentManager: FragmentManager =
+//                    requireActivity().supportFragmentManager
+//                fragmentManager.popBackStack()
+                GitHubReposApplication.navigator.goForward(RepositoryDetailsScreen())
             }
         })
 
