@@ -6,7 +6,6 @@ import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import com.bumptech.glide.Glide
 import com.google.android.material.snackbar.Snackbar
@@ -29,8 +28,9 @@ class RepositoryDetailsFragment : Fragment(R.layout.fragment_details_repository)
 
         binding!!.toolBarDetails.setNavigationOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View?) {
-                val fragmentManager: FragmentManager = requireActivity().supportFragmentManager
-                fragmentManager.popBackStack()
+//                val fragmentManager: FragmentManager = requireActivity().supportFragmentManager
+//                fragmentManager.popBackStack()
+                GitHubReposApplication.router.exit()
             }
         })
 

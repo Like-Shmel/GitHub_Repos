@@ -38,7 +38,8 @@ class FeaturedAuthorsFragment: Fragment(R.layout.fragment_featured_authors) {
 
         binding!!.favoritesBackToolbar.setNavigationOnClickListener(object : View.OnClickListener{
             override fun onClick(v: View?) {
-               requireActivity().supportFragmentManager.popBackStack()
+//               requireActivity().supportFragmentManager.popBackStack()
+                GitHubReposApplication.router.exit()
             }
 
         })

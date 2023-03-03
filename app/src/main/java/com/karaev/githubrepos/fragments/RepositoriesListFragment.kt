@@ -12,10 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.google.android.material.snackbar.Snackbar
-import com.karaev.githubrepos.GitHubReposApplication
-import com.karaev.githubrepos.R
-import com.karaev.githubrepos.Repository
-import com.karaev.githubrepos.RepositoryAdapter
+import com.karaev.githubrepos.*
 import com.karaev.githubrepos.databinding.FragmentRepositoriesListBinding
 import retrofit2.Call
 import retrofit2.Callback
@@ -75,7 +72,8 @@ class RepositoriesListFragment : Fragment(R.layout.fragment_repositories_list) {
         binding!!.toolBarFavorites.setOnMenuItemClickListener(object : Toolbar.OnMenuItemClickListener {
             override fun onMenuItemClick(item: MenuItem): Boolean {
                 if (item.itemId == R.id.menu_favorites) {
-                    openFeaturedFragment(openFeaturedAuthorsFragment)
+//                    openFeaturedFragment(openFeaturedAuthorsFragment)
+                    GitHubReposApplication.router.navigateTo(Screens.authors())
                 } else if (item.itemId == R.id.menu_about_app) {
                     openAboutAppFragment()
                 } else if (item.itemId == R.id.setting_favorites) {
@@ -95,13 +93,13 @@ class RepositoriesListFragment : Fragment(R.layout.fragment_repositories_list) {
         transaction.commit()
     }
 
-    private fun openFeaturedFragment(fragment: Fragment) {
-        val transaction: FragmentTransaction =
-            requireActivity().supportFragmentManager.beginTransaction()
-        transaction.replace(R.id.main_fragment_container_view, fragment)
-        transaction.addToBackStack(null)
-        transaction.commit()
-    }
+//    private fun openFeaturedFragment(fragment: Fragment) {
+//        val transaction: FragmentTransaction =
+//            requireActivity().supportFragmentManager.beginTransaction()
+//        transaction.replace(R.id.main_fragment_container_view, fragment)
+//        transaction.addToBackStack(null)
+//        transaction.commit()
+//    }
 
     private fun navigateFragment(fragment: Fragment) {
         val transaction: FragmentTransaction =

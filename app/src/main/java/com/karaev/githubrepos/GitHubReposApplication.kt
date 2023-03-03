@@ -2,6 +2,9 @@ package com.karaev.githubrepos
 
 import android.app.Application
 import androidx.room.Room
+import com.github.terrakok.cicerone.Cicerone
+import com.github.terrakok.cicerone.NavigatorHolder
+import com.github.terrakok.cicerone.Router
 import database.AppDatabase
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -24,12 +27,19 @@ class GitHubReposApplication : Application() {
             .build()
 
         gitHubService = retrofit.create()
+
+        cicerone = Cicerone.create()
+        router = cicerone.router
+        navigateHolder = cicerone.getNavigatorHolder()
     }
 
     companion object {
         lateinit var gitHubService: GitHubService
-
         lateinit var appDatabase: AppDatabase
+
+        private lateinit var cicerone: Cicerone<Router>
+        lateinit var router: Router
+        lateinit var navigateHolder: NavigatorHolder
     }
 
 }
