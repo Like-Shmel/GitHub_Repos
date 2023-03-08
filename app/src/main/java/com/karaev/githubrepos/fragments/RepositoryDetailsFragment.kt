@@ -1,17 +1,13 @@
 package com.karaev.githubrepos.fragments
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentTransaction
 import com.bumptech.glide.Glide
 import com.google.android.material.snackbar.Snackbar
-import com.karaev.githubrepos.GitHubReposApplication
-import com.karaev.githubrepos.R
-import com.karaev.githubrepos.RepositoryDetails
+import com.karaev.githubrepos.*
 import com.karaev.githubrepos.databinding.FragmentDetailsRepositoryBinding
 import retrofit2.Call
 import retrofit2.Callback
@@ -39,11 +35,7 @@ class RepositoryDetailsFragment : Fragment(R.layout.fragment_details_repository)
             override fun onMenuItemClick(item: MenuItem?): Boolean {
                 if (item != null) {
                     if (item.itemId == R.id.menu_share) {
-                        val shareIntent = Intent()
-                        shareIntent.setAction(Intent.ACTION_SEND)
-                        shareIntent.setType("text/plain")
-                        shareIntent.putExtra(Intent.EXTRA_TEXT, repositoryDetails!!.link)
-                        requireActivity().startActivity(shareIntent)
+                         GitHubReposApplication.router.navigateTo(Screens.share(repositoryDetails!!.link))
                     }
                 }
                 return true
@@ -54,23 +46,17 @@ class RepositoryDetailsFragment : Fragment(R.layout.fragment_details_repository)
         binding!!.openDetailsUser.setOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View?) {
 
-                val userDetailsFragment = UserDetailsFragment()
-                val bundle = Bundle()
-                bundle.putString("login", repositoryDetails!!.owner.login)
-                userDetailsFragment.arguments = bundle
-
-                val transaction: FragmentTransaction =
-                    requireActivity().supportFragmentManager.beginTransaction()
-                transaction.replace(R.id.main_fragment_container_view, userDetailsFragment)
-                transaction.addToBackStack(null)
-                transaction.commit()
+                GitHubReposApplication.router.navigateTo(Screens.profileInfo(repositoryDetails!!.owner.login))
             }
         })
 
-        val repositoryId: Int = requireArguments().getInt("id", 0)
+
+        val repository: java.io.Serializable = requireArguments().getSerializable(ARGUMENTS_ID)!!
+        val repositoryParam = repository as Repository
 
         val getRepositoriesDetails =
-            GitHubReposApplication.gitHubService.getRepositoriesDetails(repositoryId)
+            GitHubReposApplication.gitHubService.getRepositoriesDetails(repositoryParam.id)
+
 
         getRepositoriesDetails.enqueue(object : Callback<RepositoryDetails> {
             override fun onResponse(
@@ -112,4 +98,18 @@ class RepositoryDetailsFragment : Fragment(R.layout.fragment_details_repository)
             }
         })
     }
+
+    companion object {
+
+        const val ARGUMENTS_ID = "id"
+        fun createFragment(repository: Repository): Fragment {
+            val reposList = RepositoryDetailsFragment()
+            val bundle = Bundle()
+            bundle.putSerializable(ARGUMENTS_ID, repository)
+            reposList.arguments = bundle
+            return reposList
+        }
+    }
+
+
 }

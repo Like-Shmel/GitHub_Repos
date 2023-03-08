@@ -9,7 +9,6 @@ import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.google.android.material.snackbar.Snackbar
 import com.karaev.githubrepos.*
@@ -29,12 +28,8 @@ class RepositoriesListFragment : Fragment(R.layout.fragment_repositories_list) {
         RepositoryAdapter(repositoryListener = object : RepositoryAdapter.RepositoryListener {
             override fun onItemClick(repository: Repository) {
 
-                val repositoryDetailsFragment = RepositoryDetailsFragment()
+                GitHubReposApplication.router.navigateTo(Screens.reposList(repository))
 
-                val bundle = Bundle()
-                bundle.putInt("id", repository.id)
-                repositoryDetailsFragment.arguments = bundle
-                navigateFragment(repositoryDetailsFragment)
             }
         })
 
@@ -61,6 +56,7 @@ class RepositoriesListFragment : Fragment(R.layout.fragment_repositories_list) {
                     repositoryAdapter.repositories.sortBy { it.name }
                 }
                 repositoryAdapter.notifyDataSetChanged()
+
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -75,46 +71,15 @@ class RepositoriesListFragment : Fragment(R.layout.fragment_repositories_list) {
 //                    openFeaturedFragment(openFeaturedAuthorsFragment)
                     GitHubReposApplication.router.navigateTo(Screens.authors())
                 } else if (item.itemId == R.id.menu_about_app) {
-                    openAboutAppFragment()
+//                    openAboutAppFragment()
+                    GitHubReposApplication.router.navigateTo(Screens.app())
                 } else if (item.itemId == R.id.setting_favorites) {
-                    openSettingsFragment(settingsFragment)
+//                    openSettingsFragment(settingsFragment)
+                    GitHubReposApplication.router.navigateTo(Screens.settings())
                 }
                 return true
             }
         })
-    }
-
-    private fun openAboutAppFragment() {
-        val aboutApp = AboutTheAppFragment()
-        val transaction: FragmentTransaction =
-            requireActivity().supportFragmentManager.beginTransaction()
-        transaction.replace(R.id.main_fragment_container_view, aboutApp)
-        transaction.addToBackStack(null)
-        transaction.commit()
-    }
-
-//    private fun openFeaturedFragment(fragment: Fragment) {
-//        val transaction: FragmentTransaction =
-//            requireActivity().supportFragmentManager.beginTransaction()
-//        transaction.replace(R.id.main_fragment_container_view, fragment)
-//        transaction.addToBackStack(null)
-//        transaction.commit()
-//    }
-
-    private fun navigateFragment(fragment: Fragment) {
-        val transaction: FragmentTransaction =
-            requireActivity().supportFragmentManager.beginTransaction()
-        transaction.replace(R.id.main_fragment_container_view, fragment)
-        transaction.addToBackStack(null)
-        transaction.commit()
-    }
-
-    private fun openSettingsFragment(fragment: Fragment) {
-        val transaction: FragmentTransaction =
-            requireActivity().supportFragmentManager.beginTransaction()
-        transaction.replace(R.id.main_fragment_container_view, fragment)
-        transaction.addToBackStack(null)
-        transaction.commit()
     }
 
     private fun loadRepositoriesList() {
@@ -144,15 +109,12 @@ class RepositoriesListFragment : Fragment(R.layout.fragment_repositories_list) {
 
                     //Установить список с новым значение
 
-//                    var repositoriesNum = 0
-//
-//                    if (repositoriesEditor != ""){
-//                        repositoriesNum = repositoriesEditor
-//                    }else{
-//                        repositoriesNum = usersList.size
-//                    }
-
-                    var repositoriesList = usersList.take(repositoriesEditor?.toInt() ?: 20)
+                    val usersCount = if(repositoriesEditor.isNullOrBlank()){
+                         usersList.size
+                    } else {
+                        repositoriesEditor.toInt()
+                    }
+                    var repositoriesList = usersList.take(usersCount)
                     repositoryAdapter.repositories = repositoriesList.toMutableList()
                     repositoryAdapter.notifyDataSetChanged()
                 }
@@ -174,7 +136,6 @@ class RepositoriesListFragment : Fragment(R.layout.fragment_repositories_list) {
         super.onDestroy()
         getUsersCall.cancel()
     }
-
 
 }
 

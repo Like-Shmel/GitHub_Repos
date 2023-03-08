@@ -64,7 +64,7 @@ class UserDetailsFragment : Fragment(R.layout.fragment_details_user) {
 
 
 
-        val usersLogin: String = requireArguments().getString("login", "0")
+        val usersLogin: String = requireArguments().getString(ARGUMENTS_LOGIN, "0")
         getUsersDetails = GitHubReposApplication.gitHubService.getUsersDetails(usersLogin)
 
         getUsersDetails.enqueue(object : retrofit2.Callback<UserDetails> {
@@ -110,5 +110,16 @@ class UserDetailsFragment : Fragment(R.layout.fragment_details_user) {
                 snackBar.show()
             }
         })
+    }
+
+    companion object {
+        const val ARGUMENTS_LOGIN = "login"
+        fun createFragment(login: String): UserDetailsFragment {
+            val reposList = UserDetailsFragment()
+            val bundle = Bundle()
+            bundle.putSerializable(ARGUMENTS_LOGIN, login)
+            reposList.arguments = bundle
+            return reposList
+        }
     }
 }

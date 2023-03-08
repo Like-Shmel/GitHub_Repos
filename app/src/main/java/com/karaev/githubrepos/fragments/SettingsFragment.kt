@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import com.karaev.githubrepos.GitHubReposApplication
 import com.karaev.githubrepos.R
 import com.karaev.githubrepos.databinding.FragmentSettingsBinding
 
@@ -19,14 +20,7 @@ class SettingsFragment: Fragment(R.layout.fragment_settings) {
 
         binding!!.toolBarSettings.setNavigationOnClickListener(object : View.OnClickListener{
             override fun onClick(v: View?) {
-                requireActivity().supportFragmentManager.popBackStack()
-
-                val settingsToast: Toast = Toast.makeText(
-                    requireActivity(),
-                    "Настройки сохранены",
-                    Toast.LENGTH_SHORT
-                )
-                settingsToast.show()
+                GitHubReposApplication.router.exit()
             }
         })
 
