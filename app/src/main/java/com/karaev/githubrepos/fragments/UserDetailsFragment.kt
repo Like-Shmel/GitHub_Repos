@@ -7,21 +7,27 @@ import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.google.android.material.snackbar.Snackbar
 import com.karaev.githubrepos.GitHubReposApplication
 import com.karaev.githubrepos.R
 import com.karaev.githubrepos.UserDetails
 import com.karaev.githubrepos.databinding.FragmentDetailsUserBinding
+import com.karaev.githubrepos.viewModels.UserDetailsViewModel
 import database.FavoritesDao
 import models.Favorites
-import retrofit2.Call
-import retrofit2.Response
 
 class UserDetailsFragment : Fragment(R.layout.fragment_details_user) {
     private var binding: FragmentDetailsUserBinding? = null
+
+    val viewModel: UserDetailsViewModel by lazy {
+        ViewModelProvider(this).get(UserDetailsViewModel::class.java)
+    }
+    var userDetails: UserDetails? = null
+
     val favoritesDao: FavoritesDao = GitHubReposApplication.appDatabase.favoritesDao()
-    lateinit var getUsersDetails: Call<UserDetails>
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -39,7 +45,8 @@ class UserDetailsFragment : Fragment(R.layout.fragment_details_user) {
         lateinit var loginFavorites: String
         lateinit var avatarFavorites: String
 
-        binding!!.toolBarUserLogin.setOnMenuItemClickListener(object : Toolbar.OnMenuItemClickListener {
+        binding!!.toolBarUserLogin.setOnMenuItemClickListener(object :
+            Toolbar.OnMenuItemClickListener {
             override fun onMenuItemClick(item: MenuItem?): Boolean {
 
                 if (item?.itemId == R.id.menu_add_favorites) {
@@ -63,53 +70,54 @@ class UserDetailsFragment : Fragment(R.layout.fragment_details_user) {
         })
 
 
-
         val usersLogin: String = requireArguments().getString(ARGUMENTS_LOGIN, "0")
-        getUsersDetails = GitHubReposApplication.gitHubService.getUsersDetails(usersLogin)
 
-        getUsersDetails.enqueue(object : retrofit2.Callback<UserDetails> {
-            override fun onResponse(call: Call<UserDetails>, response: Response<UserDetails>) {
-                val userDetails: UserDetails? = response.body()
+        viewModel.userDetailsLiveData.observe(viewLifecycleOwner, object : Observer<UserDetails> {
+            override fun onChanged(t: UserDetails) {
+                userDetails = t
 
                 nameFavorites = userDetails!!.name
                 loginFavorites = userDetails!!.login
                 avatarFavorites = userDetails!!.avatar
 
-                if (userDetails !== null) {
+                Glide.with(this@UserDetailsFragment)
+                    .load(userDetails!!.avatar)
+                    .into(binding!!.avatarUserImageview)
 
-                    Glide.with(this@UserDetailsFragment)
-                        .load(userDetails!!.avatar)
-                        .into(binding!!.avatarUserImageview)
+                binding!!.nameUserTextview.setText(t.name)
 
-                    binding!!.nameUserTextview.setText(userDetails.name)
+                binding!!.loginUserTextview.setText(t.login)
 
-                    binding!!.loginUserTextview.setText(userDetails.login)
+                binding!!.mailUserTextview.setText(t.email)
 
-                    binding!!.mailUserTextview.setText(userDetails.email)
+                binding!!.followingUserTextview.setText(t.following.toString())
 
-                    binding!!.followingUserTextview.setText(userDetails.following.toString())
+                binding!!.followersUserTextview.setText(t.followers.toString())
 
-                    binding!!.followersUserTextview.setText(userDetails.followers.toString())
+                binding!!.repositoriesUserTextview.setText(t.public_repos.toString())
 
-                    binding!!.repositoriesUserTextview.setText(userDetails.public_repos.toString())
+                binding!!.loginUserTextview.setText(t.location)
 
-                    binding!!.loginUserTextview.setText(userDetails.location)
+                binding!!.bioUsersTextview.setText(t.bio)
 
-                    binding!!.bioUsersTextview.setText(userDetails.bio)
+                binding!!.toolBarUserLogin.setTitle(t.login)
 
-                    binding!!.toolBarUserLogin.setTitle(userDetails.login)
-                }
             }
 
-            override fun onFailure(call: Call<UserDetails>, t: Throwable) {
+        })
+
+        viewModel.errorLiveData.observe(viewLifecycleOwner, object : Observer<String> {
+            override fun onChanged(t: String) {
                 val snackBar: Snackbar = Snackbar.make(
                     requireView(),
-                    t.message!!,
+                    t,
                     Snackbar.LENGTH_LONG
                 )
                 snackBar.show()
             }
         })
+
+        viewModel.loadUserDetails(usersLogin)
     }
 
     companion object {
