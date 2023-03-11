@@ -5,16 +5,20 @@ import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.google.android.material.snackbar.Snackbar
 import com.karaev.githubrepos.*
 import com.karaev.githubrepos.databinding.FragmentDetailsRepositoryBinding
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import com.karaev.githubrepos.viewModels.RepositoryDetailViewModel
 
 class RepositoryDetailsFragment : Fragment(R.layout.fragment_details_repository) {
     private var binding: FragmentDetailsRepositoryBinding? = null
+
+    val viewModel: RepositoryDetailViewModel by lazy {
+        ViewModelProvider(this).get(RepositoryDetailViewModel::class.java)
+    }
 
     var repositoryDetails: RepositoryDetails? = null
 
@@ -24,8 +28,6 @@ class RepositoryDetailsFragment : Fragment(R.layout.fragment_details_repository)
 
         binding!!.toolBarDetails.setNavigationOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View?) {
-//                val fragmentManager: FragmentManager = requireActivity().supportFragmentManager
-//                fragmentManager.popBackStack()
                 GitHubReposApplication.router.exit()
             }
         })
@@ -35,7 +37,7 @@ class RepositoryDetailsFragment : Fragment(R.layout.fragment_details_repository)
             override fun onMenuItemClick(item: MenuItem?): Boolean {
                 if (item != null) {
                     if (item.itemId == R.id.menu_share) {
-                         GitHubReposApplication.router.navigateTo(Screens.share(repositoryDetails!!.link))
+                        GitHubReposApplication.router.navigateTo(Screens.share(repositoryDetails!!.link))
                     }
                 }
                 return true
@@ -54,50 +56,52 @@ class RepositoryDetailsFragment : Fragment(R.layout.fragment_details_repository)
         val repository: java.io.Serializable = requireArguments().getSerializable(ARGUMENTS_ID)!!
         val repositoryParam = repository as Repository
 
-        val getRepositoriesDetails =
-            GitHubReposApplication.gitHubService.getRepositoriesDetails(repositoryParam.id)
-
-
-        getRepositoriesDetails.enqueue(object : Callback<RepositoryDetails> {
-            override fun onResponse(
-                call: Call<RepositoryDetails>, response: Response<RepositoryDetails>
-            ) {
-                repositoryDetails = response.body()
-                if (repositoryDetails !== null) {
+        viewModel.repositoryDetailsLiveData.observe(
+            viewLifecycleOwner,
+            object : Observer<RepositoryDetails> {
+                override fun onChanged(t: RepositoryDetails) {
+                    repositoryDetails = t
 
                     Glide.with(this@RepositoryDetailsFragment)
-                        .load(repositoryDetails!!.owner.avatar).into(binding!!.avatarImageview)
+                        .load(t.owner.avatar)
+                        .into(binding!!.avatarImageview)
 
-                    binding!!.infoLoginTextview.setText(repositoryDetails!!.name)
+                    binding!!.infoLoginTextview.setText(t.name)
 
-                    binding!!.infoNameTextview.setText((repositoryDetails!!.owner.login))
+                    binding!!.infoNameTextview.setText((t.owner.login))
 
-                    binding!!.infoDescriptionTextview.setText(repositoryDetails!!.description)
+                    binding!!.infoDescriptionTextview.setText(t.description)
 
-                    binding!!.urlTextview.setText(repositoryDetails!!.link)
+                    binding!!.urlTextview.setText(t.link)
 
-                    binding!!.starTextview.setText(repositoryDetails!!.star)
+                    binding!!.starTextview.setText(t.star)
 
-                    binding!!.repostTextview.setText(repositoryDetails!!.repost)
+                    binding!!.repostTextview.setText(t.repost)
 
-                    binding!!.errorsTextview.setText(repositoryDetails!!.error)
+                    binding!!.errorsTextview.setText(t.error)
 
-                    binding!!.toolBarDetails.setTitle(repositoryDetails!!.name)
-
-//                    toolBarDetails.setSupportActionBar().setSubtitle("subtitle")
+                    binding!!.toolBarDetails.setTitle(t.name)
 
                 }
-            }
 
-            override fun onFailure(call: Call<RepositoryDetails>, t: Throwable) {
+            })
 
+        viewModel.errorLiveData.observe(viewLifecycleOwner, object : Observer<String> {
+            override fun onChanged(t: String) {
                 val snackBar: Snackbar = Snackbar.make(
-                    requireView(), t.message!!, Snackbar.LENGTH_LONG
+                    requireView(),
+                    t,
+                    Snackbar.LENGTH_LONG
                 )
                 snackBar.show()
             }
+
         })
+
+        viewModel.loadRepositoryDetails(repository = repository.id)
+
     }
+
 
     companion object {
 
