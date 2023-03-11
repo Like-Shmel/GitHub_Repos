@@ -5,31 +5,32 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.karaev.githubrepos.FeaturedAdapter
 import com.karaev.githubrepos.GitHubReposApplication
 import com.karaev.githubrepos.R
 import com.karaev.githubrepos.databinding.FragmentFeaturedAuthorsBinding
-import database.FavoritesDao
+import com.karaev.githubrepos.viewModels.FeatureAuthorsViewModel
 import models.Favorites
 
 class FeaturedAuthorsFragment: Fragment(R.layout.fragment_featured_authors) {
 
     private var binding: FragmentFeaturedAuthorsBinding? = null
 
-    val favoritesDao: FavoritesDao = GitHubReposApplication.appDatabase.favoritesDao()
+    val viewModel : FeatureAuthorsViewModel by lazy {
+        ViewModelProvider(this).get(FeatureAuthorsViewModel::class.java)
+    }
 
     val featuredAdapter = FeaturedAdapter(
         authorsListener = object: FeaturedAdapter.AuthorsListener{
             override fun onDeleteClick(favorites: Favorites) {
-               favoritesDao.deleteFavorites(favorites)
-                updateAuthorsList()
+                viewModel.onDelete(favorites)
             }
 
         }
     )
-//    val favoritesList: List<Favorites> = FavoritesDao.getAllFavorites()
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -38,7 +39,6 @@ class FeaturedAuthorsFragment: Fragment(R.layout.fragment_featured_authors) {
 
         binding!!.favoritesBackToolbar.setNavigationOnClickListener(object : View.OnClickListener{
             override fun onClick(v: View?) {
-//               requireActivity().supportFragmentManager.popBackStack()
                 GitHubReposApplication.router.exit()
             }
 
@@ -48,9 +48,8 @@ class FeaturedAuthorsFragment: Fragment(R.layout.fragment_featured_authors) {
         binding!!.favoritesRecyclerview.addItemDecoration(divider)
 
         binding!!.favoritesRecyclerview.adapter = featuredAdapter
-        updateAuthorsList()
 
-        val baseList: List<Favorites> = featuredAdapter.favorites
+//        val baseList: List<Favorites> = featuredAdapter.favorites
 
         binding!!.favoritesEditText.addTextChangedListener(object : TextWatcher{
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -62,20 +61,31 @@ class FeaturedAuthorsFragment: Fragment(R.layout.fragment_featured_authors) {
             override fun afterTextChanged(s: Editable?) {
 
                 val text: String = s.toString()
-                val newList = baseList.filter { it.name.contains(text, ignoreCase = true) }
 
-                featuredAdapter.favorites = newList
-                featuredAdapter.notifyDataSetChanged()
+                viewModel.afterTextChanged(text)
             }
         })
+
+        viewModel.updateAuthorsList()
+
+        viewModel.favoritesLiveData.observe(viewLifecycleOwner, object : Observer<List<Favorites>>{
+            override fun onChanged(t: List<Favorites>) {
+                featuredAdapter.favorites = t
+                featuredAdapter.notifyDataSetChanged()
+            }
+
+        })
+
     }
 
 
-    fun updateAuthorsList(){
-        val  favoritesList : List<Favorites> = favoritesDao.getAllFavorites()
-        featuredAdapter.favorites = favoritesList
-        featuredAdapter.notifyDataSetChanged()
-    }
+
+//
+//    fun updateAuthorsList(){
+//        val  favoritesList : List<Favorites> = favoritesDao.getAllFavorites()
+//        featuredAdapter.favorites = favoritesList
+//        featuredAdapter.notifyDataSetChanged()
+//    }
 
 
 

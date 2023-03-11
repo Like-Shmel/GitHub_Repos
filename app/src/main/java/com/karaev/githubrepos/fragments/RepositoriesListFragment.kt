@@ -1,7 +1,5 @@
 package com.karaev.githubrepos.fragments
 
-import android.content.Context
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
@@ -9,31 +7,29 @@ import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.google.android.material.snackbar.Snackbar
 import com.karaev.githubrepos.*
 import com.karaev.githubrepos.databinding.FragmentRepositoriesListBinding
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import com.karaev.githubrepos.viewModels.RepositoriesListViewModel
 
 // Экран для отображения списка репозитория
 class RepositoriesListFragment : Fragment(R.layout.fragment_repositories_list) {
 
+    private val viewModel: RepositoriesListViewModel by lazy {
+        ViewModelProvider(this,).get(RepositoriesListViewModel::class.java)
+    }
     private var binding: FragmentRepositoriesListBinding? = null
 
-    val openFeaturedAuthorsFragment = FeaturedAuthorsFragment()
-    val settingsFragment = SettingsFragment()
     private var repositoryAdapter =
         RepositoryAdapter(repositoryListener = object : RepositoryAdapter.RepositoryListener {
             override fun onItemClick(repository: Repository) {
-
                 GitHubReposApplication.router.navigateTo(Screens.reposList(repository))
-
             }
         })
 
-    lateinit var getUsersCall: Call<List<Repository>>
+//    lateinit var getUsersCall: Call<List<Repository>>
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -43,7 +39,9 @@ class RepositoriesListFragment : Fragment(R.layout.fragment_repositories_list) {
         binding!!.repositoryRecyclerview.addItemDecoration(divider)
 
         binding!!.repositoryRecyclerview.adapter = repositoryAdapter
-        loadRepositoriesList()
+
+
+        viewModel.loadRepositoriesList()
 
         binding!!.spinnerReposList.setOnItemSelectedListener(object : OnItemSelectedListener {
             override fun onItemSelected(
@@ -68,74 +66,46 @@ class RepositoriesListFragment : Fragment(R.layout.fragment_repositories_list) {
         binding!!.toolBarFavorites.setOnMenuItemClickListener(object : Toolbar.OnMenuItemClickListener {
             override fun onMenuItemClick(item: MenuItem): Boolean {
                 if (item.itemId == R.id.menu_favorites) {
-//                    openFeaturedFragment(openFeaturedAuthorsFragment)
                     GitHubReposApplication.router.navigateTo(Screens.authors())
                 } else if (item.itemId == R.id.menu_about_app) {
-//                    openAboutAppFragment()
                     GitHubReposApplication.router.navigateTo(Screens.app())
                 } else if (item.itemId == R.id.setting_favorites) {
-//                    openSettingsFragment(settingsFragment)
                     GitHubReposApplication.router.navigateTo(Screens.settings())
                 }
                 return true
             }
         })
-    }
 
-    private fun loadRepositoriesList() {
-        binding!!.reposListProgressBar.visibility = View.VISIBLE
-        getUsersCall = GitHubReposApplication.gitHubService.getRepositories()
+        viewModel.repositoryListLiveData.observe(viewLifecycleOwner) {
+            repositoryAdapter.repositories = it.toMutableList()
+            repositoryAdapter.notifyDataSetChanged()
+        }
 
-        getUsersCall.enqueue(object : Callback<List<Repository>> {
-            override fun onResponse(
-                call: Call<List<Repository>>, response: Response<List<Repository>>
-            ) {
+        viewModel.progressBarLiveData.observe(viewLifecycleOwner){
+            if (it !== true) {
+                binding!!.reposListProgressBar.visibility = View.VISIBLE
+            } else {
                 binding!!.reposListProgressBar.visibility = View.GONE
-
-                if (response.isSuccessful) {
-                    val usersList: List<Repository> = response.body()!!
-
-                    // Обратиться к хранилищу со значениями
-
-                    val sharedPreferences: SharedPreferences =
-                        requireContext().getSharedPreferences(
-                            "git_hub_preferences", Context.MODE_PRIVATE
-                        )
-
-                    // Получить значение по ключу
-
-                    val repositoriesEditor: String? =
-                        sharedPreferences.getString("repositoriesNumber", null)
-
-                    //Установить список с новым значение
-
-                    val usersCount = if(repositoriesEditor.isNullOrBlank()){
-                         usersList.size
-                    } else {
-                        repositoriesEditor.toInt()
-                    }
-                    var repositoriesList = usersList.take(usersCount)
-                    repositoryAdapter.repositories = repositoriesList.toMutableList()
-                    repositoryAdapter.notifyDataSetChanged()
-                }
             }
+        }
 
-            override fun onFailure(call: Call<List<Repository>>, t: Throwable) {
-                binding!!.reposListProgressBar.visibility = View.GONE
 
+        viewModel.errorLiveData.observe(viewLifecycleOwner){ t ->
+//            binding!!.reposListProgressBar.visibility = View.GONE
                 val errorSnackBar = Snackbar.make(
                     requireView(), t.message!!, Snackbar.LENGTH_LONG
                 )
                 errorSnackBar.show()
-            }
-        })
+        }
+
+
 
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        getUsersCall.cancel()
-    }
+
+
+
+
 
 }
 

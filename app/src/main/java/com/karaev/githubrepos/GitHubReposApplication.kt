@@ -1,6 +1,7 @@
 package com.karaev.githubrepos
 
 import android.app.Application
+import android.content.Context
 import androidx.room.Room
 import com.github.terrakok.cicerone.Cicerone
 import com.github.terrakok.cicerone.NavigatorHolder
@@ -13,6 +14,8 @@ import retrofit2.create
 class GitHubReposApplication : Application() {
     override fun onCreate() {
         super.onCreate()
+        context = this.applicationContext
+
         appDatabase = Room.databaseBuilder(
             this,
             AppDatabase::class.java,
@@ -34,6 +37,8 @@ class GitHubReposApplication : Application() {
     }
 
     companion object {
+        lateinit var context: Context
+
         lateinit var gitHubService: GitHubService
         lateinit var appDatabase: AppDatabase
 
