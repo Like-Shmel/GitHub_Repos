@@ -1,18 +1,21 @@
 package com.karaev.githubrepos.fragments
 
-import android.content.Context
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import com.karaev.githubrepos.GitHubReposApplication
 import com.karaev.githubrepos.R
 import com.karaev.githubrepos.databinding.FragmentSettingsBinding
+import com.karaev.githubrepos.viewModels.SettingsViewModel
 
 class SettingsFragment: Fragment(R.layout.fragment_settings) {
     private var binding: FragmentSettingsBinding? = null
-//    lateinit var numberOfRepositoriesEditText: EditText
+
+    private val ViewModel: SettingsViewModel by lazy {
+        ViewModelProvider(this).get(SettingsViewModel::class.java)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -32,32 +35,19 @@ class SettingsFragment: Fragment(R.layout.fragment_settings) {
                     Toast.LENGTH_SHORT
                 )
                 settingsToast.show()
-                saveSettings()
-            }
+                val repositoriesList = binding!!.numberOfRepositoriesEditText.text.toString()
+                ViewModel.saveSettings(repositoriesList)
 
+            }
         })
 
-        val sharedPreferences: SharedPreferences = requireContext().getSharedPreferences(
-            "git_hub_preferences",
-            Context.MODE_PRIVATE
-        )
+        ViewModel.setNumber()
 
-
-        val numberOfRepositories: String? = sharedPreferences.getString("repositoriesNumber", null)
-        binding!!.numberOfRepositoriesEditText.setText(numberOfRepositories)
+        ViewModel.numberOfRepositoriesLiveData.observe(viewLifecycleOwner){
+            binding!!.numberOfRepositoriesEditText.setText(it)
+        }
 
     }
-    private fun saveSettings() {
-        val sharedPreferences: SharedPreferences = requireContext().getSharedPreferences(
-            "git_hub_preferences",
-            Context.MODE_PRIVATE
-        )
 
-            val repositoriesList = binding!!.numberOfRepositoriesEditText.text.toString()
-
-        val editor: SharedPreferences.Editor = sharedPreferences.edit()
-        editor.putString("repositoriesNumber", repositoriesList)
-        editor.apply()
-    }
 
 }
