@@ -4,81 +4,49 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.karaev.githubrepos.GitHubReposApplication
 import com.karaev.githubrepos.Repository
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import kotlinx.coroutines.launch
 
 class RepositoriesListViewModel : ViewModel() {
 
-    lateinit var getUsersCall: Call<List<Repository>>
+//    lateinit var getUsersCall: Call<List<Repository>>
 
     val progressBarLiveData = MutableLiveData<Boolean>()
     val repositoryListLiveData =  MutableLiveData<List<Repository>>()
     val errorLiveData = MutableLiveData<Throwable>()
 
     fun loadRepositoriesList() {
+        viewModelScope.launch {
+            try {
 
-        progressBarLiveData.value = true
-        getUsersCall = GitHubReposApplication.gitHubService.getRepositories()
+                progressBarLiveData.value = true
+                val usersList = GitHubReposApplication.gitHubService.getRepositories()
 
-        getUsersCall.enqueue(object : Callback<List<Repository>> {
-            override fun onResponse(
-                call: Call<List<Repository>>, response: Response<List<Repository>>
-            ) {
+                val sharedPreferences: SharedPreferences =
+                    GitHubReposApplication.context.getSharedPreferences(
+                        "git_hub_preferences", Context.MODE_PRIVATE
+                    )
 
+                // Получить значение по ключу
 
-                if (response.isSuccessful) {
-                    val usersList: List<Repository> = response.body()!!
+                val repositoriesEditor: String? =
+                    sharedPreferences.getString("repositoriesNumber", null)
+                //Установить список с новым значение
 
-                    // Обратиться к хранилищу со значениями
-
-                    val sharedPreferences: SharedPreferences =
-                        GitHubReposApplication.context.getSharedPreferences(
-                            "git_hub_preferences", Context.MODE_PRIVATE
-                        )
-
-                    // Получить значение по ключу
-
-                    val repositoriesEditor: String? =
-                        sharedPreferences.getString("repositoriesNumber", null)
-                    //Установить список с новым значение
-
-                    val usersCount = if(repositoriesEditor.isNullOrBlank()){
-                        usersList.size
-                    } else {
-                        repositoriesEditor.toInt()
-                    }
-                    var repositoriesList = usersList.take(usersCount)
-                    repositoryListLiveData.value = repositoriesList
-//                    repositoryAdapter.repositories = repositoriesList.toMutableList()
-//                    repositoryAdapter.notifyDataSetChanged()
+                val usersCount = if(repositoriesEditor.isNullOrBlank()){
+                    usersList.size
+                } else {
+                    repositoriesEditor.toInt()
                 }
-            }
-
-            override fun onFailure(call: Call<List<Repository>>, t: Throwable) {
+                var repositoriesList = usersList.take(usersCount)
+                repositoryListLiveData.value = repositoriesList
+//                progressBarLiveData.value = false
+            } catch(e: Exception) {
                 progressBarLiveData.value = false
-                errorLiveData.value = t
-//                binding!!.reposListProgressBar.visibility = View.GONE
-//
-//                val errorSnackBar = Snackbar.make(
-//                    requireView(), t.message!!, Snackbar.LENGTH_LONG
-//                )
-//                errorSnackBar.show()
+                errorLiveData.value = e
             }
-        })
-
+        }
     }
-
-    override fun onCleared() {
-        //отменяет запрос
-        super.onCleared()
-        getUsersCall.cancel()
-    }
-
-//    override fun onDestroy() {
-//        super.onDestroy()
-//        getUsersCall.cancel()
-//    }
 }
